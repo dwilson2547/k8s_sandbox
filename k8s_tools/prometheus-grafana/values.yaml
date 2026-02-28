@@ -1,3 +1,6 @@
+# Default Helm values for kube-prometheus-stack.
+# This file is used when VALUES_FILE is not provided.
+
 # values-kube-prometheus-stack.yaml
 # Helm values for kube-prometheus-stack on kind
 
@@ -8,8 +11,15 @@ grafana:
   adminPassword: admin  # Change in production!
 
   service:
-    type: NodePort
-    nodePort: 30080
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - grafana.127.0.0.1.nip.io
+    path: /
+    pathType: Prefix
 
   # Provision default dashboards
   defaultDashboardsEnabled: true
@@ -62,8 +72,16 @@ prometheus:
         memory: 2Gi
 
   service:
-    type: NodePort
-    nodePort: 30090
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - prometheus.127.0.0.1.nip.io
+    paths:
+      - /
+    pathType: Prefix
 
 # -- Alertmanager configuration --
 alertmanager:
@@ -77,8 +95,16 @@ alertmanager:
         cpu: 200m
         memory: 256Mi
   service:
-    type: NodePort
-    nodePort: 30093
+    type: ClusterIP
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - alertmanager.127.0.0.1.nip.io
+    paths:
+      - /
+    pathType: Prefix
 
 # -- Node Exporter --
 nodeExporter:
@@ -94,8 +120,8 @@ kubeApiServer:
 
 kubeControllerManager:
   enabled: true
-  endpoints:
-    - 172.18.0.2  # Will be auto-discovered, fallback
+  # Avoid static endpoints override (legacy v1 Endpoints object path).
+  # Let chart/service discovery handle targets.
 
 kubeScheduler:
   enabled: true

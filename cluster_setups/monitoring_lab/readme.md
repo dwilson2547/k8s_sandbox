@@ -1,44 +1,47 @@
-# Kind + Prometheus Operator + Grafana
+# Monitoring Lab
 
-Local Kubernetes monitoring stack using kind, kube-prometheus-stack Helm chart.
+### Tool Dependencies:
+- [x] prometheus-grafana
 
-## Cluster Layout
+### Cluster Configuration
+- Default - 3 node
+- Name: monitoring-lab
 
-| Node | Role |
-|------|------|
-| monitoring-lab-control-plane | Control plane |
-| monitoring-lab-worker | Worker |
-| monitoring-lab-worker2 | Worker |
+### Env Overrides
+- `CLUSTER_NAME`: monitoring-lab
+- `NAMESPACE`: monitoring
+- `PROMETHEUS_VALUES_FILE`: k8s_tools/prometheus-grafana/values.yaml
 
-## What Gets Installed
+### Custom Additions
+N/A
 
-The `kube-prometheus-stack` Helm chart deploys:
+### Intended Use
+- Local Kubernetes monitoring stack using `kube-prometheus-stack`
+  - Prometheus — metrics collection with 7d retention
+  - Grafana — dashboards and visualization (pre-loaded with K8s dashboards)
+  - Alertmanager — alert routing and notification
+  - Node Exporter — host-level metrics
+  - Kube State Metrics — Kubernetes object state metrics
 
-- **Prometheus Operator** — manages Prometheus instances via CRDs
-- **Prometheus** — metrics collection with 7d retention
-- **Grafana** — dashboards and visualization (pre-loaded with K8s dashboards)
-- **Alertmanager** — alert routing and notification
-- **Node Exporter** — host-level metrics from each node
-- **Kube State Metrics** — Kubernetes object state metrics
-- **Default recording & alerting rules** — out-of-the-box K8s alerts
-
-## Quick Start
-
+### Quick Start
 ```bash
-chmod +x setup.sh teardown.sh
-./setup.sh
+bash start_prometheus_cluster.sh
 ```
 
-## Access
+### Access
 
 | Service | URL | Credentials |
 |---------|-----|-------------|
-| Grafana | http://localhost:30080 | admin / admin |
-| Prometheus | http://localhost:30090 | — |
-| Alertmanager | http://localhost:30093 | — |
+| Grafana | http://grafana.127.0.0.1.nip.io | admin / admin |
+| Prometheus | http://prometheus.127.0.0.1.nip.io | — |
+| Alertmanager | http://alertmanager.127.0.0.1.nip.io | — |
 
-## Adding Your Own ServiceMonitor
+### Teardown
+```bash
+bash teardown.sh
+```
 
+### Adding Your Own ServiceMonitor
 ```yaml
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
@@ -52,12 +55,4 @@ spec:
   endpoints:
     - port: metrics
       interval: 15s
-```
-
-The values file sets `serviceMonitorSelectorNilUsesHelmValues: false`, so Prometheus will pick up ServiceMonitors from **any namespace** without needing extra label selectors.
-
-## Teardown
-
-```bash
-./teardown.sh
 ```
