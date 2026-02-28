@@ -13,7 +13,14 @@ warn() { echo -e "${YELLOW}[WARN]${NC} $*"; }
 err()  { echo -e "${RED}[ERROR]${NC} $*" >&2; }
 
 CLUSTER_NAME="${CLUSTER_NAME:-kind}"
-VALUES_FILE="${VALUES_FILE:-${SCRIPT_DIR}/configs/default-values.yaml}"
+
+if [[ -n "${KIND_CONFIG_FILE:-}" ]]; then
+  RESOLVED_CONFIG="${KIND_CONFIG_FILE}"
+elif [[ -n "${TOOLS_CONFIG_NAME:-}" ]]; then
+  RESOLVED_CONFIG="${SCRIPT_DIR}/configs/${TOOLS_CONFIG_NAME}"
+else
+  RESOLVED_CONFIG="${SCRIPT_DIR}/configs/default-values.yaml"
+fi
 
 # --- Preflight checks ---
 for cmd in kind; do
@@ -38,9 +45,8 @@ if kind get clusters 2>/dev/null | grep -q "^${CLUSTER_NAME}$"; then
 fi
 
 # --- Create cluster ---
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log "Creating Kind cluster '$CLUSTER_NAME' (1 control-plane + 2 workers)..."
-kind create cluster --config "${VALUES_FILE}" --name "${CLUSTER_NAME}"
+kind create cluster --config "${RESOLVED_CONFIG}" --name "${CLUSTER_NAME}"
 
 log "Waiting for nodes to be ready..."
 kubectl wait --for=condition=Ready nodes --all --timeout=120s

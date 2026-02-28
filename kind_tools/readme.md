@@ -25,7 +25,8 @@ If the cluster already exists and `--clean` is not passed, the script exits with
 | Variable | Default Value | Description |
 | -------- | ------------- | ----------- |
 | `CLUSTER_NAME` | `kind` | Name of the kind cluster |
-| `VALUES_FILE` | `./configs/default-values.yaml` | Path to a kind Cluster config yaml |
+| `TOOLS_CONFIG_NAME` | _(unset)_ | Name of a config file inside `kind_tools/configs/` (e.g. `default-values.yaml`). Ignored if `KIND_CONFIG_FILE` is set. |
+| `KIND_CONFIG_FILE` | _(unset)_ | Full path to a kind Cluster config YAML. Takes precedence over `TOOLS_CONFIG_NAME`. When neither is set, `configs/default-values.yaml` is used. |
 
 ## Default Config
 

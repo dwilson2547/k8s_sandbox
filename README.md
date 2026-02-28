@@ -62,6 +62,3 @@ Reusable install scripts in `k8s_tools/` can be composed into any cluster setup.
 - **New k8s tool:** copy `k8s_tools/template/` and implement the install script and readme.
 
 Refer to [.github/copilot-instructions.md](.github/copilot-instructions.md) for scripting conventions and workflow details.
-
-## TODO
-- [ ] Re-structure kind values environment variable, have either TOOLS_CONFIG_NAME which picks a file from the kind-tools/configs folder, or KIND_CONFIG_FILE which is the full path to the config file to use
