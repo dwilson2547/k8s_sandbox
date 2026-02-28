@@ -1,0 +1,28 @@
+# kind-cluster.yaml
+# 3-node cluster: 1 control plane + 2 workers
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+name: monitoring-lab
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: InitConfiguration
+        nodeRegistration:
+          kubeletExtraArgs:
+            node-labels: "ingress-ready=true"
+    extraPortMappings:
+      # Grafana NodePort
+      - containerPort: 30080
+        hostPort: 30080
+        protocol: TCP
+      # Prometheus NodePort
+      - containerPort: 30090
+        hostPort: 30090
+        protocol: TCP
+      # Alertmanager NodePort
+      - containerPort: 30093
+        hostPort: 30093
+        protocol: TCP
+  - role: worker
+  - role: worker
